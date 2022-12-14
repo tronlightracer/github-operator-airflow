@@ -15,6 +15,7 @@ doc = """###The third task is expected to fail
           ### Once this is done you can run this dag
         """
 
+
 def get_reposs(user):
     logged = logging.info(list(user.get_repos()))
     return [pprint(i) for i in logged]
@@ -27,7 +28,8 @@ with DAG(
 ) as dag:
 
     list_repos = GithubOperator(
-        tas    doc_md=doc,hub_method="get_user",
+        task_id="gh_list_repos",
+        github_method="get_user",
         github_method_args={},
         result_processor=lambda user: pprint((list(user.get_repos()))),
         # result_processor=get_reposs("tronlightracer"),
@@ -42,11 +44,12 @@ with DAG(
 
     get_lang = GithubOperator(
         task_id="gh_get_repo_by_lang",
-        github_method="get_user",
-        github_method_args={},
-        result_processor=lambda user: pprint(user.get_repos(query='language:shell'))
+        github_method="get_repo",
+        github_method_args={"full_name_or_id": "tronlightracer"},
+        result_processor=lambda repo: pprint(repo.get_repo(query='language:shell'))
     )
 
 list_repos >> get_repo >> get_lang
 
+# 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
 # logging.info(list(user.get_repos()))
